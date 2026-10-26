@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Active Directory Home Lab: ampdata.org</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef1f5;--surface:#fff;--ink:#14213d;--muted:#55627a;--line:#cfd6e2;--accent:#c2410c;--tree:#1d4ed8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1624;--surface:#172033;--ink:#e8edf6;--muted:#9aa7bf;--line:#2b3750;--accent:#fb923c;--tree:#7aa2ff}}
+:root[data-theme="dark"]{--bg:#0f1624;--surface:#172033;--ink:#e8edf6;--muted:#9aa7bf;--line:#2b3750;--accent:#fb923c;--tree:#7aa2ff}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:860px;margin:0 auto;padding:48px 22px 72px}
+h1{font-size:clamp(2rem,5vw,3rem);line-height:1.1;margin:0 0 14px;letter-spacing:-.02em}
+h2{font-size:1.5rem;margin:56px 0 10px;letter-spacing:-.01em}
+p{max-width:68ch;margin:0 0 14px}.lead{font-size:1.15rem;color:var(--muted)}
+.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:32px;align-items:center}
+@media(max-width:720px){.hero{grid-template-columns:1fr}}
+pre.tree{margin:0;padding:20px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:6px;font:14px/1.7 "IBM Plex Mono",ui-monospace,Menlo,monospace;color:var(--tree);overflow-x:auto}
+pre.tree b{color:var(--ink);font-weight:400}pre.tree i{color:var(--muted);font-style:normal}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0;padding:0;list-style:none}
+.facts li{border:1px solid var(--line);background:var(--surface);padding:4px 12px;border-radius:999px;font-size:.9rem}
+.why{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 18px;margin:16px 0}.why strong{color:var(--accent)}
+figure{margin:18px 0;padding:0}
+figure img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px}
+figcaption{color:var(--muted);font-size:.92rem;margin-top:8px}
+ul{max-width:68ch}ul li{margin:6px 0}
+footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem}
+table{width:100%;border-collapse:collapse;margin:14px 0;background:var(--surface);border:1px solid var(--line);font-size:.95rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-weight:600}
+.scroll{overflow-x:auto}ol.steps{max-width:68ch;padding-left:22px}ol.steps li{margin:10px 0}
+</style></head><body><main>
+<section class="hero"><div>
+<h1>Active Directory home lab</h1>
+<p class="lead">I built a Windows Server 2022 virtual machine and used it to learn how companies manage users, permissions, and servers with Active Directory. My domain is <b>ampdata.org</b>.</p>
+<ul class="facts" style="padding:0"><li>Windows Server 2022</li><li>Windows 11</li><li>VirtualBox</li><li>AD DS</li></ul>
+</div>
+<pre class="tree"><b>ampdata.org</b> <i>(forest root)</i>
+├─ Finance
+│  └─ users
+├─ IT
+│  └─ users
+├─ HR
+│  └─ users
+└─ Managers <i>(group)</i>
+   <i>members from all 3 OUs</i>
+
+Site: <b>HamburgSite</b></pre></section>
+
+<h2>Environment and tools</h2>
+<div class="scroll"><table>
+<tr><th>Layer</th><th>What I used</th><th>Role in the lab</th></tr>
+<tr><td>Host computer</td><td>Windows 11 (64-bit)</td><td>The physical PC that runs everything else</td></tr>
+<tr><td>Virtualization</td><td>Oracle VirtualBox</td><td>Runs the server as a virtual machine, isolated from my PC</td></tr>
+<tr><td>Server VM</td><td>Windows Server 2022</td><td>The domain controller for my domain, ampdata.org</td></tr>
+<tr><td>Directory service</td><td>Active Directory Domain Services</td><td>Stores users, groups, and OUs, and handles sign-ins</td></tr>
+</table></div>
+<p><b>Utilities on the server:</b> Server Manager, Active Directory Users and Computers, Active Directory Sites and Services, and Active Directory Domains and Trusts.</p>
+
+<h2>Part 1: Building the server VM</h2>
+<p>A virtual machine is a full computer that runs inside a window on my own PC. It gives me a safe place to learn: if I make a mistake, I can fix it or rebuild, and nothing outside the VM is affected.</p>
+<ol class="steps">
+<li><b>Got the installer.</b> I downloaded a Windows Server 2022 ISO, which is a disc image of the operating system.</li>
+<li><b>Created the VM in VirtualBox.</b> I gave it a name, pointed it to the ISO, and set aside memory, CPU, and a virtual disk from my PC.</li>
+<li><b>Installed Windows Server 2022.</b> I booted the VM from the ISO, ran the installer, and set the Administrator password.</li>
+<li><b>Opened Server Manager.</b> This is the main control panel of a Windows Server. It shows the server's roles, status, and tools in one place.</li>
+</ol>
+<figure><img alt="Server Manager running in the VirtualBox VM" src="images/server-manager.png"><figcaption>My server running in VirtualBox, with Server Manager open.</figcaption></figure>
+
+<h2>Part 2: Active Directory Domain Services</h2>
+<p>I installed the AD DS role and promoted the server to a domain controller. This created my domain, <b>ampdata.org</b>, and made it the root of my forest.</p>
+<p><b>Organizational units.</b> I created OUs for Finance, IT, and HR so accounts are organized the way a real company would structure them.</p>
+<figure><img alt="Active Directory Users and Computers showing the Finance, HR, and IT OUs" src="images/ou-structure.png"><figcaption>Active Directory Users and Computers with my Finance, HR, and IT OUs.</figcaption></figure>
+<p><b>Users and groups.</b> I created users inside each OU, then made a security group called <b>Managers</b> and added users from different OUs to it.</p>
+<div class="why"><strong>Why groups matter:</strong> permissions given to a group are easier to scale and audit than permissions given to each person one by one.</div>
+<figure><img alt="The IT OU with its users and the Managers security group" src="images/it-ou-and-managers.png"><figcaption>The IT OU, with its users and the Managers security group. User names are hidden.</figcaption></figure>
+
+<h2>Managing user accounts</h2>
+<p>Day-to-day admin work happens in Active Directory Users and Computers. Right-clicking a user lets me:</p>
+<ul>
+<li><b>Reset the password</b>, and require the user to change it at next sign-in.</li>
+<li><b>Disable an account</b> when someone leaves or should not have access, and enable it again later.</li>
+<li><b>Unlock an account</b> that was locked after too many failed sign-in attempts.</li>
+</ul>
+
+<h2>The physical side: where and how</h2>
+<p><b>Sites.</b> I created a site named <b>HamburgSite</b> in Active Directory Sites and Services. Sites describe the real network layout, and AD uses them to decide where clients sign in and how domain controllers sync.</p>
+<figure><img alt="Active Directory Sites and Services showing HamburgSite" src="images/hamburgsite.png"><figcaption>HamburgSite next to the default site in Sites and Services.</figcaption></figure>
+<p><b>Replication.</b> I am learning the two kinds:</p>
+<ul>
+<li><b>Intra-site</b> replication happens between domain controllers in the same site. It is fast and automatic.</li>
+<li><b>Inter-site</b> replication happens between sites over site links. It runs on a schedule to save bandwidth.</li>
+</ul>
+
+<h2>Domains and trusts</h2>
+<p>A <b>forest</b> is the top-level container that holds one or more domains. My first domain is the forest root. In the Active Directory Domains and Trusts console, you can create <b>trust relationships</b> so users in one domain or forest can use resources in another. This is common when two organizations work together.</p>
+
+<h2>Skills demonstrated</h2>
+<ul>
+<li>Setting up a virtual lab with VirtualBox</li><li>Installing and navigating Windows Server 2022</li><li>Creating and promoting a domain controller</li><li>Designing OUs, users, and security groups</li><li>Resetting passwords and disabling accounts</li><li>Creating AD sites and understanding replication</li>
+</ul>
+
+<h2>Up next</h2>
+<ul>
+<li>Take a VM snapshot so I can roll back after risky changes</li><li>Group Policy Objects (GPOs)</li><li>Add a second domain controller and watch replication work</li><li>File share permissions for the Managers group</li>
+</ul>
+<footer>Notes from my home lab. I will update this page as I go.</footer>
+</main></body></html>
